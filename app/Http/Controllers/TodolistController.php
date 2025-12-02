@@ -9,9 +9,11 @@ use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\TodolistResource;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TodolistController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -32,11 +34,14 @@ class TodolistController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create',Todolist::class);
         $data = $request->validate([
             "name" => 'required|min:3',
             "desc" => 'required|min:3',
             'is_done' => 'required|in:0,1'
         ]);
+
+        $data['user_id'] = auth()->user()->id;
 
         Try {
             $todolist = Todolist::create($data);
@@ -68,6 +73,8 @@ class TodolistController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $this->authorize('update',Todolist::class);
+
          $data = $request->validate([
             "name" => 'required|min:3',
             "desc" => 'required|min:3',
@@ -92,6 +99,8 @@ class TodolistController extends Controller
 */
 public function destroy(string $id)
 {
+        $this->authorize('delete',Todolist::class);
+
     $todo = Todolist::find($id);
     if($todo == null) return response()->json(['message'=>'data not found'],404);
     

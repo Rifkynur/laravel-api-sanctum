@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Todolist extends Model
 {
     protected $fillable = [
-        'name','desc','is_done'
+        'name','desc','is_done','user_id'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
