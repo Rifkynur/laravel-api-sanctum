@@ -37,9 +37,6 @@ class TodolistController extends Controller
         } catch(Exception $error) {
             return response()->json(["message"=>"gagal membuat todo"],500);
         }
-
-
-
     }
 
     /**
@@ -58,7 +55,22 @@ class TodolistController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+         $data = $request->validate([
+            "name" => 'required|min:3',
+            "desc" => 'required|min:3',
+            'is_done' => 'required|in:0,1'
+        ]);
+        
+        $todo = Todolist::find($id);
+        if($todo == null) return response()->json(['message'=>'data not found'],404);
+        Try {
+            $todolist = $todo->update($data);
+        return response()->json(["message"=>"Berhasil mengubah todo"],200);
+            
+        } catch(Exception $error) {
+            return response()->json(["message"=>"gagal mengubah todo"],500);
+        }
+        
     }
 
     /**
@@ -66,6 +78,8 @@ class TodolistController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+         $todo = Todolist::find($id);
+        if($todo == null) return response()->json(['message'=>'data not found'],404);
+        
     }
 }
