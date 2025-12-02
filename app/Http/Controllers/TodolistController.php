@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Exception;
+use App\Models\Todolist;
+use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
+use App\Http\Resources\TodolistResource;
+
+class TodolistController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $todolist = Todolist::latest()->get();
+        return TodolistResource::collection($todolist);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            "name" => 'required|min:3',
+            "desc" => 'required|min:3',
+            'is_done' => 'required|in:0,1'
+        ]);
+
+        Try {
+            $todolist = Todolist::create($data);
+            return response()->json(["message"=>"Berhasil membuat todo",'data'=> new TodolistResource($todolist)],201);
+            
+        } catch(Exception $error) {
+            return response()->json(["message"=>"gagal membuat todo"],500);
+        }
+
+
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+
+    {
+        $todo = Todolist::find($id);
+        if($todo == null) return response()->json(['message'=>'data not found'],404);
+        return new TodolistResource($todo); 
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}
